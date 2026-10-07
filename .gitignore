@@ -2,5 +2,5 @@
 api_test/
 note.md
 package.json
-package.config.json
-package.private.config.json
+project.config.json
+project.private.config.json
