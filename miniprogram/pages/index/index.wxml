@@ -1,0 +1,119 @@
+<!--index.wxml-->
+<navigation-bar title="Maitea查分小程序" back="{{false}}" color="black" background="#FFF"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y type="list">
+  <!-- 输入 API Key -->
+  <view wx:if="{{!hasAuth}}" class="auth">
+    <view class="auth-title">Welcome to Maitea</view>
+    <view class="auth-subtitle">
+      <text>
+        请输入 Access Token 以获取你的个人资料
+        (可在maitea.app获取)
+      </text>
+    </view>
+    <input
+      class="auth-input"
+      type="text"
+      value="{{inputKey}}"
+      placeholder="例如：123|XxXxXxXxXxXxXxXx"
+      confirm-type="done"
+      disabled="{{loading}}"
+      bindinput="onApiKeyInput"
+      bindconfirm="onSubmit"
+    />
+    <button
+      class="auth-button"
+      type="primary"
+      loading="{{loading}}"
+      disabled="{{loading}}"
+      bindtap="onSubmit"
+    >{{loading ? '获取中…' : '获取玩家资料'}}</button>
+    <view class="auth-tip">Access Token 仅保存在本机，用于请求 Maitea API</view>
+  </view>
+
+  <!-- 展示接口返回的资料 -->
+  <view wx:else class="profiles">
+    <view wx:if="{{profiles.length === 0}}" class="empty">接口未返回任何资料</view>
+    <block wx:for="{{profiles}}" wx:key="id" wx:for-item="profile">
+      <view class="card">
+        <view class="card-body">
+          <!-- 身份区：底板作为背景，其上放置头像、铭牌、LV、Rating、称号、主账号标记 -->
+          <view class="board">
+            <image
+              wx:if="{{profile.boardSrc}}"
+              class="board-bg"
+              src="{{profile.boardSrc}}"
+              mode="scaleToFill"
+            ></image>
+            <view class="board-body {{profile.boardSrc ? 'over-board' : ''}}">
+              <!-- 头像：DeKa 大头像放大到与背景板左上角、左下角对齐 -->
+              <image
+                wx:if="{{profile.avatarSrc}}"
+                class="avatar {{profile.avatarIsDeka ? 'avatar-deka' : ''}}"
+                src="{{profile.avatarSrc}}"
+                mode="aspectFit"
+              ></image>
+              <view class="identity-right">
+                <!-- 主账号标记：背景板右上角 -->
+                <text wx:if="{{profile.is_primary}}" class="board-tag">主账号</text>
+                <!-- 铭牌 ：文本叠加其上，左下 Rating（上）/ 玩家名（下），右上 LV -->
+                <view class="plate {{profile.avatarIsDeka ? 'plate-deka' : ''}}">
+                  <image
+                    wx:if="{{profile.nameplateSrc}}"
+                    class="plate-bg"
+                    src="{{profile.nameplateSrc}}"
+                    mode="scaleToFill"
+                  ></image>
+                  <view
+                    class="plate-body {{profile.nameplateSrc ? (profile.avatarIsDeka ? 'over-plate-deka' : 'over-plate') : ''}}"
+                  >
+                    <text class="plate-level">LV.{{profile.level}}</text>
+                    <view class="plate-main">
+                      <text class="plate-rating rating-{{profile.ratingTier}}">{{profile.ratingText}}</text>
+                      <text class="plate-name">{{profile.name}}</text>
+                    </view>
+                  </view>
+                </view>
+                <!-- 称号：铭牌下方，从右到左滚动显示 -->
+                <view class="title-marquee" wx:if="{{profile.titleText}}">
+                  <text class="title-marquee-text" style="animation-duration: {{profile.titleDuration}}s">{{profile.titleText}}</text>
+                </view>
+              </view>
+            </view>
+          </view>
+
+          <view class="section" wx:if="{{profile.play_stats}}">
+            <view class="section-title">游玩统计</view>
+            <view class="stats">
+              <view class="stat">
+                <text class="stat-value">{{profile.play_stats.total}}</text>
+                <text class="stat-label">总场次</text>
+              </view>
+              <view class="stat">
+                <text class="stat-value">{{profile.play_stats.wins}}</text>
+                <text class="stat-label">胜场</text>
+              </view>
+              <view class="stat">
+                <text class="stat-value">{{profile.play_stats.vs}}</text>
+                <text class="stat-label">对战</text>
+              </view>
+              <view class="stat">
+                <text class="stat-value">{{profile.play_stats.sync}}</text>
+                <text class="stat-label">同步</text>
+              </view>
+            </view>
+            <view class="row">
+              <text class="row-label">首次游玩</text>
+              <text class="row-value">{{profile.firstPlayedAt}}</text>
+            </view>
+            <view class="row">
+              <text class="row-label">最近游玩</text>
+              <text class="row-value">{{profile.latestPlayedAt}}</text>
+            </view>
+          </view>
+        </view>
+
+      </view>
+    </block>
+    <button class="change-key" bindtap="onChangeApiKey">重新输入 Token</button>
+  </view>
+</scroll-view>

@@ -1,0 +1,389 @@
+/**index.wxss**/
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.scrollarea {
+  flex: 1;
+  overflow-y: hidden;
+}
+
+/* ---------- 输入 API Key ---------- */
+.auth {
+  padding: 80rpx 48rpx;
+}
+
+.auth-title {
+  font-size: 56rpx;
+  font-weight: bold;
+  text-align: center;
+  color: #1f1f1f;
+}
+
+.auth-subtitle {
+  margin-top: 16rpx;
+  font-size: 28rpx;
+  color: #888;
+  text-align: center;
+}
+
+.auth-input {
+  margin-top: 64rpx;
+  height: 96rpx;
+  padding: 0 28rpx;
+  box-sizing: border-box;
+  border: 1rpx solid rgba(0, 0, 0, 0.1);
+  border-radius: 16rpx;
+  background: #f7f7f7;
+  font-size: 30rpx;
+}
+
+.auth-button {
+  margin-top: 40rpx;
+}
+
+.auth-tip {
+  margin-top: 32rpx;
+  font-size: 24rpx;
+  color: #aaa;
+  text-align: center;
+  line-height: 1.6;
+  word-break: break-all;
+}
+
+/* ---------- 玩家资料展示 ---------- */
+.profiles {
+  padding: 24rpx 32rpx;
+  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+}
+
+.empty {
+  padding: 120rpx 0;
+  text-align: center;
+  color: #999;
+  font-size: 28rpx;
+}
+
+.card {
+  margin-bottom: 32rpx;
+  border-radius: 24rpx;
+  background: #fff;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.06);
+  overflow: hidden;
+}
+
+.card-body {
+  padding: 32rpx;
+}
+
+/* ---------- 身份区：底板（720 x 300，圆角）+ 头像 + 铭牌 + 称号 ---------- */
+/* 卡片内容宽度 686rpx - 内边距 64rpx = 622rpx，按 720 : 300 换算高度约 259rpx */
+.board {
+  height: 259rpx;
+  border-radius: 20rpx;
+  overflow: hidden;
+}
+
+.board-bg {
+  display: block;
+  width: 100%;
+  height: 259rpx;
+}
+
+/* 身份信息叠加在底板之上（WXSS 的 background-image 不支持网络图片，故用 image 节点垫底 + 负外边距） */
+.board-body {
+  height: 259rpx;
+  padding: 20rpx 24rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
+.over-board {
+  margin-top: -259rpx;
+}
+
+/* 主账号标记：贴在背景板右上角（负外边距越出内边距），圆角由 .board 裁切 */
+.board-tag {
+  align-self: flex-end;
+  margin: -20rpx -24rpx 0 0;
+  padding: 6rpx 16rpx;
+  border-radius: 0 0 0 16rpx;
+  background: rgba(7, 193, 96, 0.92);
+  color: #ffffff;
+  font-size: 22rpx;
+  line-height: 1;
+}
+
+/* 普通头像为 128 x 128 正方形，垂直居中于底板 */
+.avatar {
+  width: 150rpx;
+  height: 150rpx;
+  margin-top: 35rpx;
+  flex-shrink: 0;
+}
+
+/* DeKa 头像为 232 x 284 竖版：放大到与底板左上角、左下角对齐（高 = 底板高 259rpx，宽按原比例 212rpx） */
+.avatar-deka {
+  width: 212rpx;
+  height: 259rpx;
+  margin: -20rpx 0 -20rpx -24rpx;
+}
+
+/* 铭牌 + 称号所在右侧列：主账号标记贴顶、称号贴底 */
+.identity-right {
+  flex: 1;
+  align-self: stretch;
+  margin-left: 20rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* 铭牌（284 x 96）：图片在下层，文本叠加其上；高度按右侧列宽度（404rpx）等比换算 */
+.plate {
+  height: 137rpx;
+}
+
+/* DeKa 头像更宽，右侧列仅 366rpx，铭牌高度同步缩小以保持原比例 */
+.plate-deka {
+  height: 124rpx;
+}
+
+.plate-bg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* 文本层：LV 在右上角单独一行，Rating / 玩家名在下并独占整行宽度 */
+.plate-body {
+  height: 100%;
+  padding: 10rpx 14rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  overflow: visible;
+}
+
+/* 有铭牌图时，文本层上移覆盖图片 */
+.over-plate {
+  margin-top: -137rpx;
+}
+
+.over-plate-deka {
+  margin-top: -124rpx;
+}
+
+/* 铭牌左下角：Rating 在上、玩家名在下；本块不设底色，宽度撑满铭牌 */
+.plate-main {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Rating：字体与玩家名一致，底色按分段展示不同的不透明颜色（见下方 .rating-*） */
+.plate-rating {
+  padding: 0 12rpx;
+  border-radius: 10rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  line-height: 1.2;
+  color: #ffffff;
+  text-shadow: -2rpx 0 0 #000000, 2rpx 0 0 #000000, 0 -2rpx 0 #000000, 0 2rpx 0 #000000,
+    -2rpx -2rpx 0 #000000, 2rpx -2rpx 0 #000000, -2rpx 2rpx 0 #000000, 2rpx 2rpx 0 #000000;
+  -webkit-text-stroke: 1rpx #000000;
+}
+
+/* ---------- Rating 分段底色 ----------
+   纯色段用 background-color；铜/银/金/彩虹额外叠 background-image 渐变做金属光泽，
+   若当前渲染内核不支持渐变，则退化为不透明底色。分段规则见 utils/api.ts 的 buildRatingTier。 */
+.rating-white {
+  background-color: #ffffff;
+}
+
+.rating-blue {
+  background-color: #1f6fd0;
+}
+
+.rating-green {
+  background-color: #1f9e52;
+}
+
+.rating-yellow {
+  background-color: #f0c419;
+}
+
+.rating-red {
+  background-color: #d62f26;
+}
+
+.rating-purple {
+  background-color: #7a3fc8;
+}
+
+/* 金属光泽铜：同色系 暗 → 亮 的三段反光 */
+.rating-copper {
+  background-color: #b4692f;
+  background-image: linear-gradient(180deg, #f8d5ad 0%, #d08440 42%, #8d4718 58%, #efb377 100%);
+}
+
+/* 金属光泽银 */
+.rating-silver {
+  background-color: #b8bdc4;
+  background-image: linear-gradient(180deg, #ffffff 0%, #cfd4da 42%, #8b929a 58%, #eef1f4 100%);
+}
+
+/* 金属光泽金 */
+.rating-gold {
+  background-color: #d9a92b;
+  background-image: linear-gradient(180deg, #fff3b0 0%, #e9bd2c 42%, #a3770d 58%, #f8de7c 100%);
+}
+
+/* 金属光泽彩虹：斜向多档渐变，每档之间夹一次高光，接近金属彩虹反光 */
+.rating-rainbow {
+  background-color: #b23fd0;
+  background-image: linear-gradient(
+    115deg,
+    #ffd9d9 0%,
+    #ff5b5b 12%,
+    #ffd08a 26%,
+    #ffe74d 36%,
+    #8bf0ad 50%,
+    #4dc3ff 64%,
+    #b7a8ff 78%,
+    #f2b6ff 90%,
+    #d24dff 100%
+  );
+}
+
+/* 玩家名：白字 + 黑描边，独占铭牌整行宽度且不做省略号截断（过长时向外溢出而不是被隐藏） */
+.plate-name {
+  margin-top: 2rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  line-height: 1.2;
+  color: #ffffff;
+  white-space: nowrap;
+  text-shadow: -2rpx 0 0 #000000, 2rpx 0 0 #000000, 0 -2rpx 0 #000000, 0 2rpx 0 #000000,
+    -2rpx -2rpx 0 #000000, 2rpx -2rpx 0 #000000, -2rpx 2rpx 0 #000000, 2rpx 2rpx 0 #000000;
+  -webkit-text-stroke: 1rpx #000000;
+}
+
+/* 铭牌右上角：LV（白字黑描边，不单独占用玩家名的宽度） */
+.plate-level {
+  align-self: flex-end;
+  font-size: 24rpx;
+  font-weight: bold;
+  line-height: 1.2;
+  color: #ffffff;
+  text-shadow: -2rpx 0 0 #000000, 2rpx 0 0 #000000, 0 -2rpx 0 #000000, 0 2rpx 0 #000000,
+    -2rpx -2rpx 0 #000000, 2rpx -2rpx 0 #000000, -2rpx 2rpx 0 #000000, 2rpx 2rpx 0 #000000;
+  -webkit-text-stroke: 1rpx #000000;
+}
+
+/* ---------- 称号：铭牌下方，从右到左滚动显示 ---------- */
+.title-marquee {
+  height: 36rpx;
+  margin-top: 8rpx;
+  border-radius: 8rpx;
+  background: rgba(0, 0, 0, 0.32);
+  overflow: hidden;
+}
+
+/* 从右到左逐字滚出：
+   1) padding-left: 100% 先把整条文案推到容器右侧之外（百分比按容器宽度计算）；
+   2) 再整体位移 -100%（百分比按元素自身宽度 = 容器宽 + 文案宽计算），
+      于是起点在右侧之外、终点在左侧之外，左侧消失后不会在右边突然出现一截。 */
+.title-marquee-text {
+  display: inline-block;
+  padding-left: 100%;
+  font-size: 24rpx;
+  line-height: 36rpx;
+  color: #ffffff;
+  white-space: nowrap;
+  animation-name: title-scroll;
+  animation-duration: 8s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+/* 0% 时文案刚好在容器右侧之外逐字进入，100% 时刚好全部离开左侧，循环处无缝衔接 */
+@keyframes title-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12rpx 0;
+}
+
+.row-label {
+  color: #999;
+  font-size: 26rpx;
+}
+
+.row-value {
+  max-width: 62%;
+  color: #333;
+  font-size: 26rpx;
+  text-align: right;
+  word-break: break-all;
+}
+
+.section {
+  margin-top: 24rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid rgba(0, 0, 0, 0.06);
+}
+
+.section-title {
+  margin-bottom: 8rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  color: #1f1f1f;
+}
+
+.stats {
+  display: flex;
+  flex-direction: row;
+  margin: 16rpx 0;
+}
+
+.stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.stat-value {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #1f1f1f;
+}
+
+.stat-label {
+  margin-top: 8rpx;
+  font-size: 22rpx;
+  color: #999;
+}
+
+.change-key {
+  margin-top: 8rpx;
+}
