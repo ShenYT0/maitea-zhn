@@ -48,30 +48,20 @@ Example response (200, Success):
             },
             "options": {
                 "icon": {
-                    "id": 1020,
-                    "is_deka": false,
-                    "png": "https://maitea.app/storage/user_icons/1020.png",
-                    "webp": "https://maitea.app/storage/user_icons/1020.webp"
+                    "id": 0,
+                    "png": "0000.png",
+                    "webp": "0000.webp"
                 },
-                "icon_deka": {
-                    "id": 1020,
-                    "is_deka": true,
-                    "png": "https://maitea.app/storage/user_icons_deka/1020.png",
-                    "webp": "https://maitea.app/storage/user_icons_deka/1020.webp"
-                },
+                "icon_deka": null,
                 "nameplate": {
-                    "id": 331,
-                    "png": "https://maitea.app/storage/user_nameplates/0331.png",
-                    "webp": "https://maitea.app/storage/user_nameplates/0331.webp"
+                    "id": 0,
+                    "png": "0000.png",
+                    "webp": "0000.webp"
                 },
                 "frame": {
-                    "id": 461,
-                    "png": "https://maitea.app/storage/user_frames/0461.png",
-                    "webp": "https://maitea.app/storage/user_frames/0461.webp"
-                },
-                "title": {
                     "id": 0,
-                    "value": "称号"
+                    "png": "0000.png",
+                    "webp": "0000.webp"
                 }
             },
             "is_primary": true

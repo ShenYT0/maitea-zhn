@@ -1,3 +1,6 @@
 .env
 api_test/
 note.md
+package.json
+package.config.json
+package.private.config.json
