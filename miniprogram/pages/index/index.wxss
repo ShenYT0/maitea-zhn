@@ -16,10 +16,21 @@ page {
 }
 
 .auth-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   font-size: 56rpx;
   font-weight: bold;
   text-align: center;
   color: #1f1f1f;
+}
+
+/* static 目录 logo：正方形等比例显示在标题上方 */
+.auth-logo {
+  width: 168rpx;
+  height: 168rpx;
+  margin-bottom: 12rpx;
+  display: block;
 }
 
 .auth-subtitle {
@@ -47,10 +58,24 @@ page {
 .auth-tip {
   margin-top: 32rpx;
   font-size: 24rpx;
-  color: #aaa;
+  color: #888;
   text-align: center;
   line-height: 1.6;
   word-break: break-all;
+  /* 用 flex 拆密度项：链接作为独立 flex 项，天然是整体，不会被内部断行 */
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+}
+
+/* maitea.app 超链接：蓝色 + 下划线，点击进入 web-view 页面 */
+.auth-tip-link {
+  color: #2f6fed;
+  text-decoration: underline;
+  white-space: nowrap;
+  word-break: keep-all;
 }
 
 /* ---------- 玩家资料展示 ---------- */
@@ -300,8 +325,7 @@ page {
 
 /* 从右到左逐字滚出：
    1) padding-left: 100% 先把整条文案推到容器右侧之外（百分比按容器宽度计算）；
-   2) 再整体位移 -100%（百分比按元素自身宽度 = 容器宽 + 文案宽计算），
-      于是起点在右侧之外、终点在左侧之外，左侧消失后不会在右边突然出现一截。 */
+   2) 再整体位移 -100%（百分比按元素自身宽度 = 容器宽 + 文案宽计算 */
 .title-marquee-text {
   display: inline-block;
   padding-left: 100%;
@@ -384,6 +408,47 @@ page {
   color: #999;
 }
 
+/* 「重新输入 Token」红色按钮 */
 .change-key {
   margin-top: 8rpx;
+  background: #ff4d4f;
+  color: #ffffff;
+  border-radius: 16rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  line-height: 88rpx;
 }
+
+/* 去掉 button 默认的半透明边框 */
+.change-key::after {
+  border: none;
+}
+
+/* ---------- 游玩记录入口 ---------- */
+.card-more {
+  margin-top: 24rpx;
+  padding: 24rpx 0 16rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  border-top: 1rpx solid #f0f0f0;
+}
+
+/* 入口按下反馈 */
+.card-more-active {
+  opacity: 0.6;
+}
+
+.card-more-text {
+  font-size: 24rpx;
+  color: #07c160;
+}
+
+.card-more-arrow {
+  margin-left: 6rpx;
+  font-size: 26rpx;
+  line-height: 1;
+  color: #07c160;
+}
+

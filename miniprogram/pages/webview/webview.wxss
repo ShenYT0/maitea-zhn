@@ -1,0 +1,13 @@
+/*webview.wxss*/
+page {
+  height: 100vh;
+  background: #ffffff;
+}
+
+/* 链接无效 / 打开失败时的兜底 */
+.webview-empty {
+  padding: 120rpx 48rpx;
+  text-align: center;
+  font-size: 26rpx;
+  color: #999;
+}

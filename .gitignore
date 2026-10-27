@@ -4,3 +4,4 @@ note.md
 package.json
 project.config.json
 project.private.config.json
+.DS_Store

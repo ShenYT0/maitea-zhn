@@ -1,0 +1,8 @@
+{
+  "renderer": "webview",
+  "navigationStyle": "default",
+  "navigationBarTitleText": "Maitea",
+  "navigationBarBackgroundColor": "#ffffff",
+  "navigationBarTextStyle": "black",
+  "usingComponents": {}
+}

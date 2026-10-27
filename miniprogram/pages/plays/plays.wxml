@@ -1,0 +1,196 @@
+<!--plays.wxml-->
+<!-- 游玩记录列表：默认展示第一页，页尾提供上一页 / 下一页翻页 -->
+<navigation-bar title="{{pageTitle}}" back="{{true}}" color="black" background="#FFF"></navigation-bar>
+<scroll-view
+  class="scrollarea"
+  scroll-y
+  type="list"
+  scroll-into-view="{{scrollAnchor}}"
+  scroll-top="{{scrollTop}}"
+>
+  <view id="plays-top" class="plays-top"></view>
+  <view class="plays">
+    <!-- 首次加载：游玩记录与顶部身份卡（头像/铭牌）都就绪后统一展示，期间只显示加载中 -->
+    <view wx:if="{{!ready}}" class="plays-tip">加载中…</view>
+    <block wx:else>
+    <!-- 顶部玩家身份卡：头像（左，普通正方形）+ 铭牌 + 「共 N 条」同一行 -->
+    <view wx:if="{{profile}}" class="plays-profile">
+      <image
+        wx:if="{{profile.avatarSrc}}"
+        class="plays-profile-avatar"
+        src="{{profile.avatarSrc}}"
+        mode="aspectFit"
+      ></image>
+      <view class="plays-profile-plate {{profile.nameplateSrc ? 'plate-image' : 'plate-plain'}}">
+        <image
+          wx:if="{{profile.nameplateSrc}}"
+          class="plays-profile-plate-bg"
+          src="{{profile.nameplateSrc}}"
+          mode="aspectFit"
+        ></image>
+        <view class="plays-profile-plate-body">
+          <text class="plays-profile-level">LV.{{profile.level}}</text>
+          <view class="plays-profile-main">
+            <text class="plays-profile-rating rating-{{profile.ratingTier}}">{{profile.ratingText}}</text>
+            <text class="plays-profile-name">{{profile.name}}</text>
+          </view>
+        </view>
+      </view>
+      <text class="plays-page">{{totalText}}</text>
+    </view>
+    <!-- 身份卡获取失败时，仅单独显示「共 N 条」 -->
+    <view wx:if="{{!profile}}" class="plays-header">
+      <text class="plays-page">{{totalText}}</text>
+    </view>
+
+      <!-- 空数据 / 错误提示 -->
+      <view wx:if="{{error}}" class="plays-tip">{{error}}</view>
+      <view wx:elif="{{plays.length === 0}}" class="plays-tip">暂无游玩记录</view>
+
+    <block wx:for="{{plays}}" wx:key="id">
+      <view class="play">
+        <!-- 顶部：封面在左；右侧从上到下依次为 TRACK+难度/定数、曲名、作者 -->
+        <view class="play-top">
+          <view class="play-cover">
+            <text class="play-cover-placeholder">♪</text>
+            <image
+              wx:if="{{item.coverUrl}}"
+              class="play-cover-img"
+              src="{{item.coverUrl}}"
+              mode="aspectFill"
+              lazy-load="{{true}}"
+              data-index="{{index}}"
+              binderror="onCoverError"
+            ></image>
+          </view>
+          <view class="play-head">
+            <view class="play-tags">
+              <text class="play-difficulty tone-{{item.difficultyTone}}">{{item.difficultyLabel}}</text>
+              <text wx:if="{{item.chartLevelText}}" class="play-level tone-{{item.difficultyTone}}">{{item.chartLevelText}}</text>
+              <text class="play-track">TRACK {{item.track}}</text>
+            </view>
+            <text class="play-title title-{{item.titleSize}}">{{item.songName}}</text>
+            <text class="play-artist">{{item.songArtist}}</text>
+          </view>
+        </view>
+        <view class="play-score">
+          <!-- 左侧：achievement 在上、score 在下，徽章与整列等高 -->
+          <view class="play-score-main">
+            <text class="play-achievement">{{item.achievement_formatted}}%</text>
+            <text class="play-score-value">{{item.score_formatted}}</text>
+          </view>
+          <!-- 评级：A 及以上用官方徽章图片，其余（BBB 及以下）继续显示文字 -->
+          <image
+            wx:if="{{item.rankIconUrl}}"
+            class="play-rank-img"
+            src="{{item.rankIconUrl}}"
+            mode="aspectFit"
+            data-index="{{index}}"
+            binderror="onRankIconError"
+          ></image>
+          <text wx:else class="play-rank">{{item.rank}}</text>
+          <!-- 奖章：FC (full_combo) / FC+ (full_combo_plus) / AP / AP+，紧跟在评级右侧 -->
+          <image
+            wx:if="{{item.medalUrl}}"
+            class="play-medal"
+            src="{{item.medalUrl}}"
+            mode="aspectFit"
+            data-index="{{index}}"
+            binderror="onMedalError"
+          ></image>
+        </view>
+        <view class="play-meta">
+          <view class="play-meta-main">
+            <text class="play-date">{{item.dateText}}</text>
+            <text wx:if="{{item.location}}" class="play-location">在{{item.location}}游玩</text>
+          </view>
+          <!-- 判定详情按钮与时间同一行 -->
+          <view wx:if="{{item.scoreRows.length > 0}}" class="play-actions">
+            <view
+              class="play-detail-btn"
+              hover-class="play-detail-btn-hover"
+              bindtap="onToggleScore"
+              data-index="{{index}}"
+            >
+              <text>判定详情</text>
+              <text class="play-detail-arrow {{item.scoreOpen ? 'play-detail-arrow-open' : ''}}">▾</text>
+            </view>
+          </view>
+        </view>
+        <view wx:if="{{item.badges.length > 0}}" class="play-badges">
+          <text wx:for="{{item.badges}}" wx:for-item="badge" wx:key="*this" class="play-badge">{{badge}}</text>
+        </view>
+        <!-- 判定详情：点按钮下拉展开 score_detail 表格（横轴 Perfect / Great / Good / Miss） -->
+        <view wx:if="{{item.scoreOpen}}" class="play-detail">
+          <view class="play-detail-row play-detail-head">
+            <text class="play-detail-label"></text>
+            <text class="play-detail-cell play-detail-perfect">Perfect</text>
+            <text class="play-detail-cell play-detail-great">Great</text>
+            <text class="play-detail-cell play-detail-good">Good</text>
+            <text class="play-detail-cell play-detail-miss">Miss</text>
+          </view>
+          <view
+            wx:for="{{item.scoreRows}}"
+            wx:for-item="row"
+            wx:key="label"
+            class="play-detail-row"
+          >
+            <text class="play-detail-label">{{row.label}}</text>
+            <text class="play-detail-cell play-detail-perfect">{{row.perfect}}</text>
+            <text class="play-detail-cell play-detail-great">{{row.great}}</text>
+            <text class="play-detail-cell play-detail-good">{{row.good}}</text>
+            <text class="play-detail-cell play-detail-miss">{{row.miss}}</text>
+          </view>
+        </view>
+      </view>
+      <!-- track == 1：新一轮开始，分割线画在卡片外、与下一条记录之间的空隙 -->
+      <view wx:if="{{item.track === 1 && index < plays.length - 1}}" class="play-session-line"></view>
+    </block>
+
+    <!-- 页尾翻页 -->
+    <view class="pager">
+      <view
+        class="pager-btn {{canPrev ? 'pager-btn-on' : 'pager-btn-off'}}"
+        hover-class="{{canPrev ? 'pager-btn-hover' : ''}}"
+        bindtap="onPrevPage"
+      >上一页</view>
+      <!-- 中间：默认「第 x / n 页」，点击后原位变为页码输入框 + 跳转按钮 -->
+      <view class="pager-center">
+        <block wx:if="{{!pagerEditing}}">
+          <text
+            class="pager-info {{canJump ? 'pager-info-edit' : ''}}"
+            hover-class="{{canJump ? 'pager-info-hover' : ''}}"
+            bindtap="onBeginJump"
+          >{{pagerText}}</text>
+        </block>
+        <block wx:else>
+          <input
+            class="pager-jump-input"
+            type="number"
+            value="{{jumpPage}}"
+            placeholder=""
+            placeholder-class="pager-jump-ph"
+            maxlength="5"
+            focus="{{jumpFocus}}"
+            confirm-type="go"
+            bindinput="onJumpInput"
+            bindconfirm="onJumpConfirm"
+          />
+          <view
+            class="pager-jump-btn {{canJump ? 'pager-jump-on' : 'pager-jump-off'}}"
+            hover-class="{{canJump ? 'pager-btn-hover' : ''}}"
+            bindtap="onJumpConfirm"
+          >跳转</view>
+          <text class="pager-jump-cancel" bindtap="onCancelJump">取消</text>
+        </block>
+      </view>
+      <view
+        class="pager-btn {{canNext ? 'pager-btn-on' : 'pager-btn-off'}}"
+        hover-class="{{canNext ? 'pager-btn-hover' : ''}}"
+        bindtap="onNextPage"
+      >下一页</view>
+    </view>
+    <!-- <view class="pager-tip">进入时默认展示第一页，每次翻一页</view> -->
+    </block>
+  </view>
+</scroll-view>

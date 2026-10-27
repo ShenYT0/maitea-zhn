@@ -1,7 +1,9 @@
 {
   "pages": [
     "pages/index/index",
-    "pages/logs/logs"
+    "pages/plays/plays",
+    "pages/logs/logs",
+    "pages/webview/webview"
   ],
   "window": {
     "navigationBarTextStyle": "black",

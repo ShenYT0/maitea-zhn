@@ -1,0 +1,732 @@
+/**plays.wxss**/
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: skyblue;
+}
+
+.scrollarea {
+  flex: 1;
+  overflow-y: hidden;
+}
+
+/* 列表顶部锚点：翻页后 scroll-into-view 回到这里 */
+.plays-top {
+  height: 1rpx;
+}
+
+.plays {
+  padding: 24rpx 32rpx;
+  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+}
+
+.plays-header {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: flex-end;
+  padding: 0 8rpx 16rpx;
+}
+
+.plays-page {
+  flex-shrink: 0;
+  margin-left: auto;
+  font-size: 24rpx;
+  color: #999;
+}
+
+/* ---------- 顶部玩家身份卡 ---------- */
+.plays-profile {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 20rpx;
+}
+
+/* 头像：128 * 128 */
+.plays-profile-avatar {
+  flex-shrink: 0;
+  width: 128rpx;
+  height: 128rpx;
+  border-radius: 10rpx;
+  background: #f2f3f5;
+}
+
+/* 铭牌：保持 284:96 原比例，等比放大到与头像等高（96rpx → 378 x 128rpx）*/
+.plays-profile-plate {
+  position: relative;
+  flex-shrink: 0;
+  width: 378rpx;
+  height: 128rpx;
+  margin-left: 16rpx;
+  overflow: hidden;
+  border-radius: 8rpx;
+  background: #ffffff;
+  border: 1rpx solid #e3e6ea;
+}
+
+/* 有铭牌背景图：去掉浅色底与描边，背景图按原比例铺满 */
+.plays-profile-plate.plate-image {
+  background: transparent;
+  border: none;
+}
+
+/* 无背景图：浅色底 + 描边（默认外观，显式声明便于与 image 态对照） */
+.plays-profile-plate.plate-plain {
+  background: #ffffff;
+  border: 1rpx solid #e3e6ea;
+}
+
+.plays-profile-plate-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.plays-profile-plate-body {
+  position: relative;
+  height: 100%;
+  padding: 8rpx 12rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.plays-profile-level {
+  align-self: flex-end;
+  font-size: 22rpx;
+  font-weight: bold;
+  line-height: 1.2;
+  color: #888;
+}
+
+.plays-profile-main {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Rating：白字黑描边，底色按分段展示（见下方 .rating-*，与首页一致） */
+.plays-profile-rating {
+  padding: 0 12rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  line-height: 1.2;
+  color: #ffffff;
+  text-shadow: -2rpx 0 0 #000000, 2rpx 0 0 #000000, 0 -2rpx 0 #000000, 0 2rpx 0 #000000,
+    -2rpx -2rpx 0 #000000, 2rpx -2rpx 0 #000000, -2rpx 2rpx 0 #000000, 2rpx 2rpx 0 #000000;
+  -webkit-text-stroke: 1rpx #000000;
+}
+
+/* 玩家名：无背景图时深色文字（不描边） */
+.plays-profile-name {
+  margin-top: 2rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  line-height: 1.2;
+  color: #1f1f1f;
+  white-space: nowrap;
+}
+
+/* 有铭牌背景图时：LV / 玩家名改为白字黑描边（与首页铭牌一致），黑色描边 */
+.plays-profile-plate.plate-image .plays-profile-level,
+.plays-profile-plate.plate-image .plays-profile-name {
+  color: #ffffff;
+  text-shadow: -2rpx 0 0 #000000, 2rpx 0 0 #000000, 0 -2rpx 0 #000000, 0 2rpx 0 #000000,
+    -2rpx -2rpx 0 #000000, 2rpx -2rpx 0 #000000, -2rpx 2rpx 0 #000000, 2rpx 2rpx 0 #000000;
+  -webkit-text-stroke: 1rpx #000000;
+}
+
+/* Rating 分段底色（与首页一致；铜/银/金/彩虹为金属渐变） */
+.rating-white {
+  background-color: #ffffff;
+}
+
+.rating-blue {
+  background-color: #45aeff;
+}
+
+.rating-green {
+  background-color: #6fd43d;
+}
+
+.rating-yellow {
+  background-color: #f8b807;
+}
+
+.rating-red {
+  background-color: #f82f43;
+}
+
+.rating-purple {
+  background-color: #9f51dc;
+}
+
+.rating-copper {
+  background-color: #b4692f;
+  background-image: linear-gradient(180deg, #f8d5ad 0%, #d08440 42%, #8d4718 58%, #efb377 100%);
+}
+
+.rating-silver {
+  background-color: #b8bdc4;
+  background-image: linear-gradient(180deg, #ffffff 0%, #cfd4da 42%, #8b929a 58%, #eef1f4 100%);
+}
+
+.rating-gold {
+  background-color: #d9a92b;
+  background-image: linear-gradient(180deg, #fff3b0 0%, #e9bd2c 42%, #a3770d 58%, #f8de7c 100%);
+}
+
+.rating-rainbow {
+  background-color: #b23fd0;
+  background-image: linear-gradient(
+    115deg,
+    #ffd9d9 0%,
+    #ff5b5b 12%,
+    #ffd08a 26%,
+    #ffe74d 36%,
+    #8bf0ad 50%,
+    #4dc3ff 64%,
+    #b7a8ff 78%,
+    #f2b6ff 90%,
+    #d24dff 100%
+  );
+}
+
+.plays-tip {
+  padding: 120rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* ---------- 单条游玩记录 ---------- */
+.play {
+  margin-bottom: 20rpx;
+  padding: 24rpx;
+  border-radius: 20rpx;
+  background: #fff;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.05);
+}
+
+/* PC分割线 */
+.play-session-line {
+  margin: -4rpx 8rpx 20rpx;
+  border-top: 5rpx solid #c9cdd4;
+}
+
+/* 顶部行：封面在左，右侧为曲名 / 作者等 */
+.play-top {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+/* 封面右侧信息列：TRACK+难度/定数 → 曲名 → 作者 */
+.play-head {
+  flex: 1;
+  min-width: 0;
+  margin-left: 16rpx;
+  display: flex;
+  flex-direction: column;
+}
+
+/* 曲目封面：原图 220 x 214，按正方形裁切；占位字符在下层，图片失败时露出 */
+.play-cover {
+  position: relative;
+  flex-shrink: 0;
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  background: #f2f3f5;
+}
+
+.play-cover-img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.play-cover-placeholder {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  line-height: 112rpx;
+  text-align: center;
+  font-size: 44rpx;
+  color: #c8c8c8;
+}
+
+/* 曲名：在封面右侧、难度下方；太长时按档位缩小字号直到完整显示（保留省略号兜底） */
+.play-title {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  line-height: 1.4;
+  color: #1f1f1f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 曲名字号档位：能放得下就不缩，最接近完整显示的档位生效 */
+.play-title.title-lg {
+  font-size: 27rpx;
+}
+
+.play-title.title-md {
+  font-size: 24rpx;
+}
+
+.play-title.title-sm {
+  font-size: 21rpx;
+}
+
+.play-title.title-xs {
+  font-size: 18rpx;
+}
+
+/* TRACK + 难度 + 定数：难度挨着封面，定数紧贴难度，TRACK 用 margin-left:auto 靠右 */
+.play-tags {
+  flex-shrink: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+/* TRACK 序号：右上角的灰色小标 */
+.play-track {
+  flex-shrink: 0;
+  margin-left: auto;
+  padding: 4rpx 10rpx;
+  border-radius: 8rpx;
+  font-size: 20rpx;
+  font-weight: bold;
+  line-height: 1.6;
+  color: #666;
+  background: #f0f1f3;
+}
+
+.play-difficulty {
+  flex-shrink: 0;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  font-size: 20rpx;
+  font-weight: bold;
+  line-height: 1.6;
+  color: #fff;
+  background: #8c8c8c;
+}
+
+/* 难度定数：紧跟在难度标签后面，如 Lv.12+ (12.7) */
+.play-level {
+  flex-shrink: 0;
+  margin-left: 10rpx;
+  font-size: 22rpx;
+  font-weight: bold;
+  line-height: 1.4;
+  color: #8c8c8c;
+  white-space: nowrap;
+}
+
+/* 定数配色与难度一致 */
+.play-level.tone-easy {
+  color: #45aeff;
+}
+
+.play-level.tone-basic {
+  color: #6fd43d;
+}
+
+.play-level.tone-advanced {
+  color: #f8b807;
+}
+
+.play-level.tone-expert {
+  color: #f82f43;
+}
+
+.play-level.tone-master {
+  color: #9f51dc;
+}
+
+.play-level.tone-remaster {
+  color: #d172ed;
+}
+
+.play-level.tone-other {
+  color: #8c8c8c;
+}
+
+/* 难度配色：easy / basic / advanced / expert / master / remaster */
+.play-difficulty.tone-easy {
+  background: #45aeff;
+}
+
+.play-difficulty.tone-basic {
+  background: #6fd43d;
+}
+
+.play-difficulty.tone-advanced {
+  background: #f8b807;
+}
+
+.play-difficulty.tone-expert {
+  background: #f82f43;
+}
+
+.play-difficulty.tone-master {
+  background: #9f51dc;
+}
+
+.play-difficulty.tone-remaster {
+  background: #d172ed;
+}
+
+.play-difficulty.tone-other {
+  background: #8c8c8c;
+}
+
+.play-artist {
+  margin-top: 4rpx;
+  font-size: 24rpx;
+  color: #888;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 评分区：左列 achievement(上) + score(下)，右侧评级徽章 / 奖章放大到整列等高，元素间距加宽 */
+.play-score {
+  margin-top: 16rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.play-score-main {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.play-achievement {
+  font-size: 40rpx;
+  font-weight: bold;
+  line-height: 1.2;
+  color: #d1542b;
+}
+
+/* score：移到 achievement 正下方 */
+.play-score-value {
+  margin-top: 2rpx;
+  font-size: 24rpx;
+  line-height: 1.3;
+  color: #555;
+}
+
+/* 文字评级（BBB 及以下）：跟随放大 */
+.play-rank {
+  align-self: center;
+  margin-left: 24rpx;
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #b8860b;
+}
+
+/* 评级徽章：原图 88 x 72；放大到与 achievement + score 整列等高（82rpx），按 88:72 取宽 100rpx */
+.play-rank-img {
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: 24rpx;
+  width: 100rpx;
+  height: 82rpx;
+  display: block;
+}
+
+/* 奖章（FC / FC+ / AP / AP+）：与评级徽章同尺寸等高，统一在右侧 */
+.play-medal {
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: 20rpx;
+  width: 100rpx;
+  height: 82rpx;
+  display: block;
+}
+
+.play-meta {
+  margin-top: 14rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 22rpx;
+  color: #aaa;
+}
+
+/* 时间 / 地点左边一组（可换行），判定详情按钮靠右 */
+.play-meta-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.play-date {
+  margin-right: 16rpx;
+}
+
+/* 机厅名称 */
+.play-location {
+  color: #aaa;
+}
+
+.play-badges {
+  margin-top: 12rpx;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.play-badge {
+  margin-right: 10rpx;
+  padding: 2rpx 12rpx;
+  border-radius: 6rpx;
+  font-size: 20rpx;
+  line-height: 1.6;
+  color: #fff;
+  background: #07c160;
+}
+
+/* ---------- 判定详情（下拉抽屉） ---------- */
+/* 按钮放在时间同一行的右侧 */
+.play-actions {
+  flex-shrink: 0;
+  margin-left: 16rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.play-detail-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 6rpx 18rpx;
+  border: 1rpx solid #dcdcdc;
+  border-radius: 24rpx;
+  font-size: 22rpx;
+  /* 按钮文字用黑色 */
+  color: #000;
+  background: #fafafa;
+}
+
+.play-detail-btn-hover {
+  background: #f0f0f0;
+}
+
+/* 展开箭头：展开时旋转 180°，指向收起 */
+.play-detail-arrow {
+  margin-left: 8rpx;
+  font-size: 20rpx;
+  line-height: 1;
+  color: #000;
+  transition: transform 180ms ease-out;
+}
+
+.play-detail-arrow-open {
+  transform: rotate(180deg);
+}
+
+/* 抽屉：插入时自上而下展开 */
+.play-detail {
+  margin-top: 12rpx;
+  padding: 8rpx 16rpx 12rpx;
+  border: 1rpx solid #eee;
+  border-radius: 12rpx;
+  background: #fafafa;
+  animation: play-detail-in 180ms ease-out;
+}
+
+@keyframes play-detail-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12rpx);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.play-detail-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 8rpx 0;
+}
+
+.play-detail-head {
+  border-bottom: 1rpx solid #e0e0e0;
+  font-weight: bold;
+}
+
+/* 纵轴标签：与其他判定列等宽 */
+.play-detail-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 22rpx;
+  color: #000;
+}
+
+/* 四个判定列：全部等宽（flex:1），数字右对齐 */
+.play-detail-cell {
+  flex: 1;
+  min-width: 0;
+  text-align: right;
+  font-size: 22rpx;
+  color: #000;
+}
+
+.play-detail-perfect {
+  color: #e6a700;
+}
+
+.play-detail-great {
+  color: #e75480;
+}
+
+.play-detail-good {
+  color: #07c160;
+}
+
+.play-detail-miss {
+  color: #999;
+}
+
+/* ---------- 页尾翻页 ---------- */
+.pager {
+  margin-top: 32rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.pager-btn {
+  padding: 16rpx 40rpx;
+  border-radius: 999rpx;
+  font-size: 26rpx;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.pager-btn-on {
+  color: #fff;
+  background: #07c160;
+}
+
+.pager-btn-off {
+  color: #bbb;
+  background: #ececec;
+}
+
+.pager-btn-hover {
+  opacity: 0.8;
+}
+
+.pager-info {
+  font-size: 26rpx;
+  color: #666;
+}
+
+.pager-tip {
+  margin-top: 20rpx;
+  text-align: center;
+  font-size: 22rpx;
+  color: #bbb;
+}
+
+/* ---------- 跳转指定页 ---------- */
+/* 中间区域：默认显示「第 x / n 页」，点击后原位切换为输入框 + 跳转按钮 */
+.pager-center {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 可点击进入跳页的页码文字：绿色 + 虚线，提示可编辑 */
+.pager-info-edit {
+  padding: 4rpx 10rpx;
+  color: #666;
+  border-bottom: 2rpx dashed #666;
+}
+
+.pager-info-hover {
+  opacity: 0.7;
+}
+
+.pager-jump-input {
+  width: 110rpx;
+  height: 56rpx;
+  padding: 0 12rpx;
+  border: 1rpx solid #dcdcdc;
+  border-radius: 10rpx;
+  font-size: 24rpx;
+  color: #1f1f1f;
+  text-align: center;
+  background: #fff;
+}
+
+.pager-jump-ph {
+  font-size: 22rpx;
+  color: #bbb;
+}
+
+.pager-jump-btn {
+  margin-left: 12rpx;
+  padding: 10rpx 24rpx;
+  border-radius: 999rpx;
+  font-size: 24rpx;
+  line-height: 1.4;
+  text-align: center;
+}
+
+.pager-jump-on {
+  color: #fff;
+  background: #07c160;
+}
+
+.pager-jump-off {
+  color: #bbb;
+  background: #ececec;
+}
+
+/* 取消编辑：恢复「第 x / n 页」 */
+.pager-jump-cancel {
+  margin-left: 20rpx;
+  padding: 8rpx 4rpx;
+  font-size: 24rpx;
+  color: #999;
+}

@@ -3,12 +3,26 @@
 <scroll-view class="scrollarea" scroll-y type="list">
   <!-- 输入 API Key -->
   <view wx:if="{{!hasAuth}}" class="auth">
-    <view class="auth-title">Welcome to Maitea</view>
+    <view class="auth-title">
+      <!-- static 目录的 logo（SVG 加载失败时隐藏，保留文字标题） -->
+      <image
+        wx:if="{{!logoError}}"
+        class="auth-logo"
+        src="/static/maitea_logo.svg"
+        mode="aspectFit"
+        binderror="onLogoError"
+      ></image>
+      <text>Welcome to Maitea !</text>
+    </view>
     <view class="auth-subtitle">
       <text>
         请输入 Access Token 以获取你的个人资料
-        (可在maitea.app获取)
       </text>
+    </view>
+    <view class="auth-tip">
+      <text>Access Token可在</text>
+      <text class="auth-tip-link" bindtap="onOpenSite">maitea.app</text>
+      <text> 获取，仅保存在本机用于请求API</text>
     </view>
     <input
       class="auth-input"
@@ -27,7 +41,6 @@
       disabled="{{loading}}"
       bindtap="onSubmit"
     >{{loading ? '获取中…' : '获取玩家资料'}}</button>
-    <view class="auth-tip">Access Token 仅保存在本机，用于请求 Maitea API</view>
   </view>
 
   <!-- 展示接口返回的资料 -->
@@ -109,6 +122,19 @@
               <text class="row-label">最近游玩</text>
               <text class="row-value">{{profile.latestPlayedAt}}</text>
             </view>
+          </view>
+
+          <!-- 仅「查看游玩记录」这一行可点击，进入该账号的游玩记录（第一页） -->
+          <view
+            class="card-more"
+            hover-class="card-more-active"
+            hover-stay-time="80"
+            data-id="{{profile.id}}"
+            data-name="{{profile.name}}"
+            bindtap="onOpenPlays"
+          >
+            <text class="card-more-text">查看游玩记录</text>
+            <text class="card-more-arrow">›</text>
           </view>
         </view>
 

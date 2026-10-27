@@ -18,6 +18,8 @@ Component({
     // 是否已通过校验并展示资料
     hasAuth: false,
     profiles: [] as ProfileView[],
+    // logo（本地 SVG）加载失败时隐藏，保留文字标题
+    logoError: false,
   },
   lifetimes: {
     attached() {
@@ -51,6 +53,29 @@ Component({
         hasAuth: false,
         profiles: [],
         inputKey: '',
+      })
+    },
+    // 点击「maitea.app」超链接：内嵌 web-view 打开官网（避免离开小程序）
+    onOpenSite() {
+      wx.navigateTo({
+        url: '/pages/webview/webview?url=' + encodeURIComponent('https://maitea.app'),
+      })
+    },
+    // logo 图片加载失败：隐藏 logo，只保留文字标题
+    onLogoError() {
+      this.setData({ logoError: true })
+    },
+    // 点击卡片底部「查看游玩记录」入口：进入该账号的游玩记录列表（默认第一页）
+    onOpenPlays(e: WechatMiniprogram.TouchEvent) {
+      const dataset = e.currentTarget.dataset as { id?: number | string; name?: string }
+      const profileId = Number(dataset.id) || 0
+      if (!profileId) {
+        wx.showToast({ title: '账号信息异常，请重试', icon: 'none' })
+        return
+      }
+      const name = typeof dataset.name === 'string' ? dataset.name : ''
+      wx.navigateTo({
+        url: `/pages/plays/plays?profileId=${profileId}&name=${encodeURIComponent(name)}`,
       })
     },
     // 请求资料

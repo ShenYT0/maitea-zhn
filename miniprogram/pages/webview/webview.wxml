@@ -1,0 +1,4 @@
+<!--webview.wxml-->
+<!-- 内嵌打开外部网页：auth-tip 的 maitea.app 超链接 -->
+<web-view wx:if="{{url}}" src="{{url}}" binderror="onWebviewError"></web-view>
+<view wx:else class="webview-empty">链接无效</view>
