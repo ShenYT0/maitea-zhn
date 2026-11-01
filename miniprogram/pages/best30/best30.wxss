@@ -1,0 +1,339 @@
+/**best30.wxss**/
+page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: skyblue;
+}
+
+.scrollarea {
+  flex: 1;
+  overflow-y: hidden;
+}
+
+.best30 {
+  padding: 24rpx 32rpx;
+  padding-bottom: calc(48rpx + env(safe-area-inset-bottom));
+}
+
+.best30-tip {
+  padding: 120rpx 0;
+  text-align: center;
+  font-size: 28rpx;
+  color: #999;
+}
+
+.best30-sub {
+  padding: 0 8rpx 16rpx;
+  text-align: right;
+  font-size: 22rpx;
+  color: #999;
+}
+
+/* ---------- Best30 单元 ---------- */
+.best {
+  margin-bottom: 20rpx;
+  padding: 24rpx;
+  border-radius: 20rpx;
+  background: #fff;
+  box-shadow: 0 8rpx 24rpx rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* 名次：编号仅作序号，收缩占位宽度 */
+.best-no {
+  flex-shrink: 0;
+  width: 40rpx;
+  text-align: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #8c8c8c;
+}
+
+/* 封面：与游玩记录一致的取法，失败时露出 ♪ 占位块 */
+.best-cover {
+  position: relative;
+  flex-shrink: 0;
+  width: 112rpx;
+  height: 112rpx;
+  margin-left: 10rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  background: #f2f3f5;
+}
+
+.best-cover-img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.best-cover-placeholder {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  line-height: 112rpx;
+  text-align: center;
+  font-size: 44rpx;
+  color: #c8c8c8;
+}
+
+.best-main {
+  flex: 1;
+  min-width: 0;
+  margin-left: 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* 难度 + 详细等级（定数）：同色分类 */
+.best-tags {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.best-difficulty {
+  flex-shrink: 0;
+  margin-right: 10rpx;
+  padding: 2rpx 12rpx;
+  border-radius: 8rpx;
+  font-size: 20rpx;
+  font-weight: bold;
+  line-height: 1.6;
+  color: #fff;
+  background: #8c8c8c;
+}
+
+/* 详细等级：如 Lv.12+ (12.7)，颜色与难度一致 */
+.best-level {
+  flex-shrink: 0;
+  font-size: 22rpx;
+  font-weight: bold;
+  line-height: 1.4;
+  color: #8c8c8c;
+  white-space: nowrap;
+}
+
+.best-difficulty.tone-easy {
+  background: #45aeff;
+}
+
+.best-difficulty.tone-basic {
+  background: #6fd43d;
+}
+
+.best-difficulty.tone-advanced {
+  background: #f8b807;
+}
+
+.best-difficulty.tone-expert {
+  background: #f82f43;
+}
+
+.best-difficulty.tone-master {
+  background: #9f51dc;
+}
+
+.best-difficulty.tone-remaster {
+  background: #d172ed;
+}
+
+.best-difficulty.tone-other {
+  background: #8c8c8c;
+}
+
+.best-level.tone-easy {
+  color: #45aeff;
+}
+
+.best-level.tone-basic {
+  color: #6fd43d;
+}
+
+.best-level.tone-advanced {
+  color: #f8b807;
+}
+
+.best-level.tone-expert {
+  color: #f82f43;
+}
+
+.best-level.tone-master {
+  color: #9f51dc;
+}
+
+.best-level.tone-remaster {
+  color: #d172ed;
+}
+
+.best-level.tone-other {
+  color: #8c8c8c;
+}
+
+/* 评级图标 + 奖章：单独一行，位于「达成率 + rate」下方 */
+.best-badges {
+  margin-top: 8rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* 评级图标：原图 88 x 72，紧凑缩放为 64 x 52 */
+.best-rank-img {
+  flex-shrink: 0;
+  width: 64rpx;
+  height: 52rpx;
+  display: block;
+}
+
+/* 评级图标加载失败回退：文字评级（A 以下本来就没有图标资源） */
+.best-rank-text {
+  flex-shrink: 0;
+  font-size: 22rpx;
+  font-weight: bold;
+  line-height: 1.2;
+  color: #b8860b;
+}
+
+/* 奖章：与评级图标同尺寸等高 */
+.best-medal-img {
+  flex-shrink: 0;
+  margin-left: 8rpx;
+  width: 64rpx;
+  height: 52rpx;
+  display: block;
+}
+
+/* 无奖章记录：占住与奖章相同的槽位，居中显示浅灰色正方棱形虚影 */
+.best-medal-empty {
+  flex-shrink: 0;
+  margin-left: 8rpx;
+  width: 64rpx;
+  height: 52rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.best-medal-empty-diamond {
+  width: 20rpx;
+  height: 20rpx;
+  background: rgba(211, 219, 229, 0.45);
+  border: 3rpx solid #c9d2de;
+  box-shadow: inset 0 0 8rpx rgba(140, 155, 175, 0.18);
+  transform: rotate(45deg);
+}
+
+/* 曲名：超长省略；过长时按档位缩小字号避免出框（与游玩记录一致） */
+.best-title {
+  margin-top: 6rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  line-height: 1.4;
+  color: #1f1f1f;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 曲名字号档位：best30 主区较窄，预算 430rpx */
+.best-title.title-lg {
+  font-size: 26rpx;
+}
+
+.best-title.title-md {
+  font-size: 24rpx;
+}
+
+.best-title.title-sm {
+  font-size: 21rpx;
+}
+
+.best-title.title-xs {
+  font-size: 18rpx;
+}
+
+/* 达成率 + rate：独占一行（徽章已下移），文字不截断 */
+.best-metrics {
+  margin-top: 6rpx;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+}
+
+.best-achievement {
+  font-size: 36rpx;
+  font-weight: bold;
+  line-height: 52rpx; /* 与徽章等高 */
+  color: #d1542b;
+  white-space: nowrap; /* 保证不换行 */
+}
+
+.best-rate {
+  margin-left: 20rpx;
+  font-size: 28rpx;
+  line-height: 52rpx; /* 与徽章等高 */
+  color: #555;
+  white-space: nowrap; /* 保证不换行 */
+}
+
+/* Best30 头部行：与游玩记录页统一的标准间距 —— 头像与铭牌间距取
+   .plays-profile-plate 的 margin-left: 16rpx，导出按钮用 .best-share-btn 自带的
+   margin-left: auto 推到右侧 */
+
+/* 导出分享图按钮：与头像 / 铭牌同一行，右上角；绿色与全局按钮一致（#07c160），整体偏小。
+   行对齐改为底部对齐后，按钮保持自身垂直居中 */
+.best-share-btn {
+  flex-shrink: 0;
+  align-self: center;
+  margin-left: auto;
+  margin-right: 4rpx;
+  height: 48rpx;
+  padding: 0 6rpx 0 16rpx;
+  border-radius: 24rpx;
+  background: #07c160;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 24rpx;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.best-share-btn-hover {
+  transform: scale(0.94);
+  opacity: 0.92;
+}
+
+.best-share-btn-off {
+  opacity: 0.55;
+}
+
+.best-share-arrow {
+  margin-left: 8rpx;
+  width: 34rpx;
+  height: 34rpx;
+  line-height: 34rpx;
+  text-align: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.28);
+  font-size: 24rpx;
+}
+
+/* 离屏画布：逻辑尺寸 1080 x 1502px，移出可视区，仅用于导出分享图 */
+.share-canvas {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  width: 1080px;
+  height: 1502px;
+}

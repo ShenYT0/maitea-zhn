@@ -79,7 +79,9 @@
                   <view
                     class="plate-body {{profile.nameplateSrc ? (profile.avatarIsDeka ? 'over-plate-deka' : 'over-plate') : ''}}"
                   >
-                    <text class="plate-level">LV.{{profile.level}}</text>
+                    <view class="plate-level-row">
+                      <text class="plate-level">LV.{{profile.level}}</text>
+                    </view>
                     <view class="plate-main">
                       <text class="plate-rating rating-{{profile.ratingTier}}">{{profile.ratingText}}</text>
                       <text class="plate-name">{{profile.name}}</text>
@@ -124,17 +126,30 @@
             </view>
           </view>
 
-          <!-- 仅「查看游玩记录」这一行可点击，进入该账号的游玩记录（第一页） -->
-          <view
-            class="card-more"
-            hover-class="card-more-active"
-            hover-stay-time="80"
-            data-id="{{profile.id}}"
-            data-name="{{profile.name}}"
-            bindtap="onOpenPlays"
-          >
-            <text class="card-more-text">查看游玩记录</text>
-            <text class="card-more-arrow">›</text>
+          <!-- 卡片底部操作入口：仅这两行可点击 -->
+          <view class="card-actions">
+            <view
+              class="card-more"
+              hover-class="card-more-active"
+              hover-stay-time="80"
+              data-id="{{profile.id}}"
+              data-name="{{profile.name}}"
+              bindtap="onOpenPlays"
+            >
+              <text class="card-more-text">查看游玩记录</text>
+              <text class="card-more-arrow">›</text>
+            </view>
+            <view
+              class="card-more"
+              hover-class="card-more-active"
+              hover-stay-time="80"
+              data-id="{{profile.id}}"
+              data-name="{{profile.name}}"
+              bindtap="onOpenBest30"
+            >
+              <text class="card-more-text">查看best30</text>
+              <text class="card-more-arrow">›</text>
+            </view>
           </view>
         </view>
 

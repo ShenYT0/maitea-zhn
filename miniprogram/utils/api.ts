@@ -2,6 +2,7 @@
 // Maitea 开放接口封装，见 README.md
 import { formatApiDate } from './util'
 import { findChartLevel, formatChartLevel } from './charts'
+import { calculateRate } from './maimai-rate'
 
 export const API_BASE_URL = 'https://maitea.app'
 
@@ -141,15 +142,20 @@ export interface PlaySong {
   artist: PlayI18nText
 }
 
-/** 曲目封面目录：/storage/track_covers/[song.id]_mmt_[song.code].webp（220 x 214） */
+/** 曲目封面目录：/storage/track_covers/[song.id(3位补零)]_mmt_[song.code].webp（220 x 214） */
 export const TRACK_COVER_BASE = `${API_BASE_URL}/storage/track_covers`
+
+/** 服务端封面文件用 3 位补零 ID 命名（如 062_mmt_...），接口返回的 song.id 是裸数字 */
+export const padTrackCoverId = (id: number): string => {
+  return String(id).padStart(3, '0')
+}
 
 /** 拼接曲目封面地址；缺少 id / code 时返回空串（页面显示占位块） */
 export const buildTrackCoverUrl = (song: PlaySong | null): string => {
   if (!song || !song.id || !song.code) {
     return ''
   }
-  return `${TRACK_COVER_BASE}/${song.id}_mmt_${song.code}.webp`
+  return `${TRACK_COVER_BASE}/${padTrackCoverId(song.id)}_mmt_${song.code}.webp`
 }
 
 /** 评级徽章目录：/storage/ranks/rank_[rank].webp（88 x 72） */
@@ -190,6 +196,29 @@ export const buildPlayMedalUrl = (item: PlayItem, maxPercent: number): string =>
       isFinite(achievement) &&
       Math.round(achievement * 100) >= Math.round(maxPercent * 100)
     return `${MEDAL_BASE}/${isPlus ? 'all_perfect_plus' : 'all_perfect'}.webp`
+  }
+  if (item.full_combo === 2) {
+    return `${MEDAL_BASE}/full_combo_plus.webp`
+  }
+  if (item.full_combo === 1) {
+    return `${MEDAL_BASE}/full_combo.webp`
+  }
+  return ''
+}
+
+/**
+ * 拼接最佳成绩奖章地址（展示在 Best30 卡片的评级图标右侧）：
+ * - is_all_perfect 为真：直接用 best API 返回的 is_all_perfect_plus 布尔判断
+ *   all_perfect_plus / all_perfect（字段缺失时按普通 AP 处理）
+ * - 否则 full_combo === 2 → full_combo_plus，full_combo === 1 → full_combo
+ * - 其余情况返回空串（页面显示菱形占位）
+ */
+export const buildBestMedalUrl = (item: BestScore): string => {
+  if (!item) {
+    return ''
+  }
+  if (item.is_all_perfect) {
+    return `${MEDAL_BASE}/${item.is_all_perfect_plus ? 'all_perfect_plus' : 'all_perfect'}.webp`
   }
   if (item.full_combo === 2) {
     return `${MEDAL_BASE}/full_combo_plus.webp`
@@ -356,6 +385,145 @@ export const fetchPlays = (apiKey: string, profileId: number, page: number): Pro
   })
 }
 
+/** /api/v1/scores/all 需要返回的字段（与 README 示例保持一致） */
+export const BEST_SCORE_FIELDS: string[] = [
+  'id',
+  'achievement_formatted',
+  'rank',
+  'full_combo',
+  'is_all_perfect',
+  'is_all_perfect_plus',
+  'difficulty_level',
+  'song',
+]
+
+/** GET /api/v1/scores/all 的单条最佳成绩 */
+export interface BestScore {
+  id: number
+  achievement_formatted: string
+  rank: string
+  /** 0 无 / 1 Full Combo / 2 Full Combo+（best API 直接返回） */
+  full_combo?: number
+  is_all_perfect?: boolean
+  /** best API 直接给出的 AP+ 布尔值，据此判断展示 all_perfect_plus 徽章 */
+  is_all_perfect_plus?: boolean
+  difficulty_level: PlayDifficulty | null
+  song: PlaySong | null
+}
+
+/** 兼容 { data: [...] } 与 Laravel 分页 { data: { data: [...] } } 两种响应结构 */
+export const toBestScoresList = (data: unknown): BestScore[] => {
+  if (!data || typeof data !== 'object') {
+    return []
+  }
+  const root = data as { data?: unknown }
+  if (Array.isArray(root.data)) {
+    return root.data as BestScore[]
+  }
+  if (root.data && typeof root.data === 'object') {
+    const nested = (root.data as { data?: unknown }).data
+    if (Array.isArray(nested)) {
+      return nested as BestScore[]
+    }
+  }
+  return []
+}
+
+/**
+ * GET /api/v1/scores/all?profile=..：一次性获取该账号的全部最佳成绩（无分页）。
+ * API文档样例中该接口用 GET + fields 数组传参，这里与 fetchPlays 一样显式拼成 fields[]=a&fields[]=b。
+ */
+export const fetchBestScores = (apiKey: string, profileId: number): Promise<ApiResponse> => {
+  const query = [`profile=${encodeURIComponent(String(profileId))}`]
+    .concat(BEST_SCORE_FIELDS.map((field: string) => `fields[]=${encodeURIComponent(field)}`))
+    .join('&')
+  return new Promise<ApiResponse>((resolve, reject) => {
+    wx.request({
+      url: `${API_BASE_URL}/api/v1/scores/all?${query}`,
+      method: 'GET',
+      header: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      success: (res) => {
+        resolve({ statusCode: res.statusCode, data: res.data })
+      },
+      fail: (err) => {
+        reject(err)
+      },
+    })
+  })
+}
+
+/** Best30 列表展示用数据 */
+export interface BestScoreView extends BestScore {
+  songName: string
+  songArtist: string
+  /** 曲名字号档位：标题太长时逐级缩小避免出框（与游玩记录一致） */
+  titleSize: PlayTitleSize
+  difficultyLabel: string
+  difficultyTone: string
+  /** 谱面等级 / 定数文案，如 "Lv.12+ (12.7)" */
+  chartLevelText: string
+  /** 达成率数值（用于计算 rate 与排序） */
+  achievement: number
+  /** 展示文案，如 "98.45%" */
+  achievementText: string
+  /** 由 scripts/maimai-rate.ts 算法计算的 rate */
+  rate: number
+  /** 展示文案，如 "14.32" */
+  rateText: string
+  coverUrl: string
+  /** 评级图标（A 及以上；A 以下为空串，页面回退文字评级） */
+  rankIconUrl: string
+  /** FC / FC+ / AP / AP+ 奖章地址；无奖章时为空串，页面显示菱形占位 */
+  medalUrl: string
+}
+
+/** 转换单条最佳成绩为展示数据（涉及 charts-levels 反查与 rate 计算） */
+/**
+ * 转换为展示数据。best30 卡片主区比游玩记录信息列窄（约 442rpx 扣安全边距），
+ * 曲名缩字预算用更小的 BEST_TITLE_MAX_WIDTH_RPX，思路与游玩记录一致。
+ */
+export const BEST_TITLE_MAX_WIDTH_RPX = 430
+
+export const toBestScoreView = (item: BestScore): BestScoreView => {
+  const difficulty = item.difficulty_level || null
+  const song = item.song || null
+  const songName = pickI18nText(item.song && item.song.name) || '未知曲目'
+  const chart = findChartLevel(
+    song ? song.id : null,
+    song ? song.code : '',
+    difficulty ? difficulty.value : ''
+  )
+  const achievement = Number(item.achievement_formatted)
+  const safeAchievement = isFinite(achievement) ? achievement : 0
+  const rate = calculateRate(
+    safeAchievement,
+    chart ? chart.maxPercent : 0,
+    chart ? chart.levelNum : 0
+  )
+  return {
+    ...item,
+    songName,
+    titleSize: buildTitleSize(songName, BEST_TITLE_MAX_WIDTH_RPX),
+    songArtist: pickI18nText(item.song && item.song.artist) || '-',
+    difficultyLabel: difficulty ? difficulty.label || difficulty.value.toUpperCase() : '-',
+    difficultyTone: buildDifficultyTone(difficulty),
+    chartLevelText: formatChartLevel(chart),
+    achievement: safeAchievement,
+    achievementText: `${item.achievement_formatted}%`,
+    rate,
+    rateText: rate.toFixed(2),
+    coverUrl: buildTrackCoverUrl(song),
+    rankIconUrl: buildRankIconUrl(item.rank),
+    medalUrl: buildBestMedalUrl(item),
+  }
+}
+
+
+
 /** 读取接口返回的错误文案（如 "Unauthenticated."） */
 export const readErrorMessage = (data: unknown): string => {
   if (data && typeof data === 'object') {
@@ -513,10 +681,7 @@ const buildDifficultyTone = (difficulty: PlayDifficulty | null): string => {
   return tone || 'other'
 }
 
-/**
- * 角标：track skip
- * 
- */
+/** 角标：track skip */
 const buildPlayBadges = (item: PlayItem): string[] => {
   return item.is_track_skip ? ['SKIP'] : []
 }
@@ -623,11 +788,14 @@ const TITLE_FONT_SIZE_TIERS = [30, 27, 24, 21, 18]
 /** 与字号档位对应的展示档位名 */
 const TITLE_TIER_NAMES: PlayTitleSize[] = ['xl', 'lg', 'md', 'sm', 'xs']
 
-/** 曲名字号档位：按真实宽度逐档校验，取能完整显示的最大字号；仍超长时取最小档保底省略 */
-const buildTitleSize = (name: string): PlayTitleSize => {
+/**
+ * 曲名字号档位：按真实宽度逐档校验，取能完整显示的最大字号；仍超长时取最小档保底省略。
+ * maxWidthRpx 为曲名单行可用宽度（best30 卡片更窄，传入对应预算）。
+ */
+export const buildTitleSize = (name: string, maxWidthRpx = TITLE_MAX_WIDTH_RPX): PlayTitleSize => {
   const widthEm = countNameWidthEm(name || '')
   for (let i = 0; i < TITLE_FONT_SIZE_TIERS.length; i++) {
-    if (widthEm * TITLE_FONT_SIZE_TIERS[i] <= TITLE_MAX_WIDTH_RPX) {
+    if (widthEm * TITLE_FONT_SIZE_TIERS[i] <= maxWidthRpx) {
       return TITLE_TIER_NAMES[i]
     }
   }

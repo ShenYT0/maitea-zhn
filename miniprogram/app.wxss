@@ -12,3 +12,198 @@ page {
   padding: 200rpx 0;
   box-sizing: border-box;
 } 
+
+/* ---------- 简化资料卡（记录 / B30） ---------- */
+.plays-profile {
+  display: flex;
+  flex-direction: row;
+  /* 底部对齐：铭牌图片顶部有透明带 */
+  align-items: flex-end;
+  margin-bottom: 20rpx;
+}
+
+/* 头像：铭牌可见等高（铭牌图片 284:96，顶部 16/96 透明带 → 可见框体 = 5/6 高）
+   铭牌 134rpx 高 → 可见框体 ≈ 112rpx，头像同步缩小为 112 x 112 */
+.plays-profile-avatar {
+  flex-shrink: 0;
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 10rpx;
+  background: #f2f3f5;
+}
+
+/* 铭牌：默认尺寸与头像等高（高度随后按变体覆盖：有图 134rpx / 无图 112rpx） */
+.plays-profile-plate {
+  position: relative;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  width: 378rpx;
+  height: 112rpx;
+  margin-left: 16rpx;
+  overflow: hidden;
+  border-radius: 10rpx;
+  background: #ffffff;
+  border: 1rpx solid #e3e6ea;
+  box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.06);
+}
+
+/* 有铭牌背景图：
+   铭牌图片本身顶部有一段 16/96 的透明带（可见框体占底部 80/96），因此把图片版铭牌
+   放大到 396 x 134rpx，使可见框体 ≈112rpx，正好与缩小后的头像（112rpx）等高 */
+.plays-profile-plate.plate-image {
+  width: 396rpx;
+  height: 134rpx;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* 无背景图：可见浅色填充 + 描边，高度与头像（112rpx）一致，与头像圆角统一 */
+.plays-profile-plate.plate-plain {
+  height: 112rpx;
+  background: #eef2f8;
+  border: 1rpx solid #cdd6e2;
+  border-radius: 10rpx;
+}
+
+.plays-profile-plate-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.plays-profile-plate-body {
+  position: relative;
+  height: 100%;
+  padding: 8rpx 12rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+/* 等级：绝对定位于铭牌右上角（相对 .plays-profile-plate-body），与右边界保持 22rpx。*/
+.plays-profile-level-row {
+  position: absolute;
+  right: 22rpx;
+  white-space: nowrap;
+}
+/* 无图铭牌（无透明带） */
+.plays-profile-plate.plate-plain .plays-profile-level-row {
+  top: 12rpx;
+}
+/* 铭牌图片顶部 16/96 为透明带（图片高 96 中前 16 行透明），
+   放大到 134rpx 高后透明带约 22rpx，所以有图铭牌 LV 下移到 top 30rpx 落在可见框体内；*/
+.plays-profile-plate.plate-image .plays-profile-level-row {
+  top: 30rpx;
+}
+
+/* LV 文字 */
+.plays-profile-level {
+  font-size: 22rpx;
+  font-weight: bold;
+  line-height: 1.2;
+  color: #888;
+}
+
+/* Rating / 玩家名：占满整行宽度；LV 行已绝对定位脱离文档流，用 margin-top:auto 把本块固定到底部 */
+.plays-profile-main {
+  align-self: stretch;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Rating：白字黑描边，底色按分段展示 */
+.plays-profile-rating {
+  padding: 0 12rpx;
+  border-radius: 8rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  line-height: 1.2;
+  color: #ffffff;
+  text-shadow: -2rpx 0 0 #000000, 2rpx 0 0 #000000, 0 -2rpx 0 #000000, 0 2rpx 0 #000000,
+    -2rpx -2rpx 0 #000000, 2rpx -2rpx 0 #000000, -2rpx 2rpx 0 #000000, 2rpx 2rpx 0 #000000;
+  -webkit-text-stroke: 1rpx #000000;
+}
+
+/* 玩家名：无背景图时深色文字（不描边） */
+.plays-profile-name {
+  margin-top: 2rpx;
+  font-size: 28rpx;
+  font-weight: bold;
+  line-height: 1.2;
+  color: #1f1f1f;
+  white-space: nowrap;
+}
+
+/* 有铭牌背景图时：LV / 玩家名改为白字黑描边（与首页铭牌一致），黑色描边 */
+.plays-profile-plate.plate-image .plays-profile-level,
+.plays-profile-plate.plate-image .plays-profile-name {
+  color: #ffffff;
+  text-shadow: -2rpx 0 0 #000000, 2rpx 0 0 #000000, 0 -2rpx 0 #000000, 0 2rpx 0 #000000,
+    -2rpx -2rpx 0 #000000, 2rpx -2rpx 0 #000000, -2rpx 2rpx 0 #000000, 2rpx 2rpx 0 #000000;
+  -webkit-text-stroke: 1rpx #000000;
+}
+
+/* Rating 分段底色（与首页一致；铜/银/金/彩虹为金属渐变） */
+.rating-white {
+  background-color: #ffffff;
+}
+
+.rating-blue {
+  background-color: #45aeff;
+}
+
+.rating-green {
+  background-color: #6fd43d;
+}
+
+.rating-yellow {
+  background-color: #f8b807;
+}
+
+.rating-red {
+  background-color: #f82f43;
+}
+
+.rating-purple {
+  background-color: #9f51dc;
+}
+
+.rating-copper {
+  background-color: #b4692f;
+  background-image: linear-gradient(180deg, #f8d5ad 0%, #d08440 42%, #8d4718 58%, #efb377 100%);
+}
+
+.rating-silver {
+  background-color: #b8bdc4;
+  background-image: linear-gradient(180deg, #ffffff 0%, #cfd4da 42%, #8b929a 58%, #eef1f4 100%);
+}
+
+.rating-gold {
+  background-color: #d9a92b;
+  background-image: linear-gradient(180deg, #fff3b0 0%, #e9bd2c 42%, #a3770d 58%, #f8de7c 100%);
+}
+
+.rating-rainbow {
+  background-color: #b23fd0;
+  background-image: linear-gradient(
+    115deg,
+    #ffd9d9 0%,
+    #ff5b5b 12%,
+    #ffd08a 26%,
+    #ffe74d 36%,
+    #8bf0ad 50%,
+    #4dc3ff 64%,
+    #b7a8ff 78%,
+    #f2b6ff 90%,
+    #d24dff 100%
+  );
+}
+

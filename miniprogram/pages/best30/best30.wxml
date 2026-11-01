@@ -1,0 +1,108 @@
+<!--best30.wxml-->
+<!-- Best30：全部最佳成绩按 rate 从高到低取前 30 -->
+<navigation-bar title="{{pageTitle}}" back="{{true}}" color="black" background="#FFF"></navigation-bar>
+<scroll-view class="scrollarea" scroll-y type="list">
+  <view class="best30">
+    <!-- 首次加载：成绩列表与顶部身份卡都就绪后统一展示 -->
+    <view wx:if="{{!ready}}" class="best30-tip">
+      加载中…
+      <text>服务器返回数据耗时较长，请耐心等待。</text>
+    </view>
+    <block wx:else>
+      <!-- 简化版玩家卡：与游玩记录页一致 -->
+      <view wx:if="{{profile}}" class="plays-profile best30-profile">
+        <image
+          wx:if="{{profile.avatarSrc}}"
+          class="plays-profile-avatar"
+          src="{{profile.avatarSrc}}"
+          mode="aspectFit"
+        ></image>
+        <view class="plays-profile-plate {{profile.nameplateSrc ? 'plate-image' : 'plate-plain'}}">
+          <image
+            wx:if="{{profile.nameplateSrc}}"
+            class="plays-profile-plate-bg"
+            src="{{profile.nameplateSrc}}"
+            mode="aspectFit"
+          ></image>
+          <view class="plays-profile-plate-body">
+            <view class="plays-profile-level-row">
+              <text class="plays-profile-level">LV.{{profile.level}}</text>
+            </view>
+            <view class="plays-profile-main">
+              <text class="plays-profile-rating rating-{{profile.ratingTier}}">{{profile.ratingText}}</text>
+              <text class="plays-profile-name">{{profile.name}}</text>
+            </view>
+          </view>
+        </view>
+        <!-- 导出分享图按钮：与头像 / 铭牌同一行，右上角 -->
+        <view
+          class="best-share-btn {{sharing ? 'best-share-btn-off' : ''}}"
+          hover-class="{{sharing ? '' : 'best-share-btn-hover'}}"
+          bindtap="onShareBest30"
+        >
+          <text>导出</text>
+          <text class="best-share-arrow">↗</text>
+        </view>
+      </view>
+      <view wx:if="{{!profile}}" class="best30-sub">Best 30</view>
+
+      <view wx:if="{{error}}" class="best30-tip">{{error}}</view>
+      <view wx:elif="{{best.length === 0}}" class="best30-tip">暂无游玩记录</view>
+
+      <block wx:for="{{best}}" wx:key="id">
+        <view class="best">
+          <text class="best-no">{{index + 1}}</text>
+          <view class="best-cover">
+            <text class="best-cover-placeholder">♪</text>
+            <image
+              wx:if="{{item.coverUrl}}"
+              class="best-cover-img"
+              src="{{item.coverUrl}}"
+              mode="aspectFill"
+              lazy-load="{{true}}"
+              data-index="{{index}}"
+              binderror="onCoverError"
+            ></image>
+          </view>
+          <view class="best-main">
+            <view class="best-tags">
+              <text class="best-difficulty tone-{{item.difficultyTone}}">{{item.difficultyLabel}}</text>
+              <text wx:if="{{item.chartLevelText}}" class="best-level tone-{{item.difficultyTone}}">{{item.chartLevelText}}</text>
+            </view>
+            <text wx:if="{{item.songName}}" class="best-title title-{{item.titleSize}}">{{item.songName}}</text>
+            <view class="best-metrics">
+              <text class="best-achievement">{{item.achievementText}}</text>
+              <text class="best-rate">rate {{item.rateText}}</text>
+            </view>
+            <!-- 评级图标 + 奖章（FC / FC+ / AP / AP+）：单独一行，与游玩记录一致 -->
+            <view class="best-badges">
+              <image
+                wx:if="{{item.rankIconUrl}}"
+                class="best-rank-img"
+                src="{{item.rankIconUrl}}"
+                mode="aspectFit"
+                data-index="{{index}}"
+                binderror="onRankIconError"
+              ></image>
+              <text wx:else class="best-rank-text">{{item.rank}}</text>
+              <image
+                wx:if="{{item.medalUrl}}"
+                class="best-medal-img"
+                src="{{item.medalUrl}}"
+                mode="aspectFit"
+                data-index="{{index}}"
+                binderror="onMedalError"
+              ></image>
+              <!-- 无奖章：与原位置相同的浅灰色正方棱形虚影占位 -->
+              <view wx:else class="best-medal-empty">
+                <view class="best-medal-empty-diamond"></view>
+              </view>
+            </view>
+          </view>
+        </view>
+      </block>
+    </block>
+    <!-- 离屏画布：生成分享图用（type=2d），始终存在于页面中 -->
+    <canvas type="2d" id="share-canvas" class="share-canvas"></canvas>
+  </view>
+</scroll-view>

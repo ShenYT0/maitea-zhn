@@ -1,4 +1,8 @@
 # Maitea Wechat Mini-Program
+A wechat mini-program for Maitea API
+## Data & B30 Algorithm Source
+
+[https://github.com/zkldi/Tachi](https://github.com/zkldi/Tachi)
 
 ## Api Example
 
@@ -277,3 +281,117 @@ Example response (403, Accessing a resource not owned by the user):
     "message": "This action is unauthorized."
 }
 ```
+
+### Get all best scores
+Example request:
+```javascript
+const url = new URL(
+    "https://maitea.app/api/v1/scores/all"
+);
+
+const params = {
+    "profile": "1",
+};
+Object.keys(params)
+    .forEach(key => url.searchParams.append(key, params[key]));
+
+const headers = {
+    "Authorization": "Bearer {YOUR_AUTH_KEY}",
+    "Content-Type": "application/json",
+    "Accept": "application/json",
+};
+
+let body = {
+    "fields": [
+        "id",
+        "achievement_formatted",
+        "rank",
+        "full_combo",
+        "full_combo_label",
+        "is_all_perfect",
+        "is_all_perfect_plus",
+        "difficulty_level",
+        "song"
+    ]
+};
+
+fetch(url, {
+    method: "GET",
+    headers,
+    body: JSON.stringify(body),
+}).then(response => response.json());
+```
+Example response (200, Success):
+```json
+{
+    "data": [
+        {
+            "id": 1,
+            "achievement_formatted": "80.00",
+            "rank": "A",
+            "full_combo": 0,
+            "full_combo_label": null,
+            "is_all_perfect": false,
+            "is_all_perfect_plus": false,
+            "difficulty_level": {
+                "key": 1,
+                "value": "basic",
+                "label": "BASIC"
+            },
+            "song": {
+                "id": 1,
+                "code": "example_1",
+                "name": {
+                    "en": "Example 1",
+                    "jp": "なになに1"
+                },
+                "artist": {
+                    "en": "John Doe",
+                    "jp": "山田太郎"
+                }
+            }
+        },
+        {
+            "id": 2,
+            "achievement_formatted": "100.00",
+            "rank": "SSS+",
+            "full_combo": 1,
+            "full_combo_label": "Full Combo +",
+            "is_all_perfect": true,
+            "is_all_perfect_plus": true,
+            "difficulty_level": {
+                "key": 6,
+                "value": "remaster",
+                "label": "Re:MASTER"
+            },
+            "song": {
+                "id": 2,
+                "code": "example_2",
+                "name": {
+                    "en": "Example 2",
+                    "jp": "なになに1"
+                },
+                "artist": {
+                    "en": "John Doe",
+                    "jp": "山田太郎"
+                }
+            }
+        }
+    ]
+}
+```
+
+Example response (401, Invalid or expired access token):
+```json
+{
+    "message": "Unauthenticated."
+}
+```
+
+Example response (403, Accessing a resource not owned by the user):
+
+
+```json
+{
+    "message": "This action is unauthorized."
+}

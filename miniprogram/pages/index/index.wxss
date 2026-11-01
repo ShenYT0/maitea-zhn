@@ -169,9 +169,11 @@ page {
   justify-content: space-between;
 }
 
-/* 铭牌（284 x 96）：图片在下层，文本叠加其上；高度按右侧列宽度（404rpx）等比换算 */
+/* 铭牌（284 x 96）：图片在下层，文本叠加其上；高度按右侧列宽度（404rpx）等比换算
+   overflow: hidden 兜底裁切，保证叠加其上的 LV 等文本不会画出铭牌矩形 */
 .plate {
   height: 137rpx;
+  overflow: hidden;
 }
 
 /* DeKa 头像更宽，右侧列仅 366rpx，铭牌高度同步缩小以保持原比例 */
@@ -185,8 +187,10 @@ page {
   height: 100%;
 }
 
-/* 文本层：LV 在右上角单独一行，Rating / 玩家名在下并独占整行宽度 */
+/* 文本层：LV 在右上角单独一行，Rating / 玩家名在下并独占整行宽度。
+   position: relative 作为 LV 绝对定位的包含块 */
 .plate-body {
+  position: relative;
   height: 100%;
   padding: 10rpx 14rpx;
   box-sizing: border-box;
@@ -206,9 +210,11 @@ page {
   margin-top: -124rpx;
 }
 
-/* 铭牌左下角：Rating 在上、玩家名在下；本块不设底色，宽度撑满铭牌 */
+/* 铭牌左下角：Rating 在上、玩家名在下；本块不设底色，宽度撑满铭牌。
+   LV 行已绝对定位脱离文档流，用 margin-top:auto 把本块固定到底部 */
 .plate-main {
   align-self: stretch;
+  margin-top: auto;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -227,67 +233,7 @@ page {
   -webkit-text-stroke: 1rpx #000000;
 }
 
-/* ---------- Rating 分段底色 ----------
-   纯色段用 background-color；铜/银/金/彩虹额外叠 background-image 渐变做金属光泽，
-   若当前渲染内核不支持渐变，则退化为不透明底色。分段规则见 utils/api.ts 的 buildRatingTier。 */
-.rating-white {
-  background-color: #ffffff;
-}
-
-.rating-blue {
-  background-color: #1f6fd0;
-}
-
-.rating-green {
-  background-color: #1f9e52;
-}
-
-.rating-yellow {
-  background-color: #f0c419;
-}
-
-.rating-red {
-  background-color: #d62f26;
-}
-
-.rating-purple {
-  background-color: #7a3fc8;
-}
-
-/* 金属光泽铜：同色系 暗 → 亮 的三段反光 */
-.rating-copper {
-  background-color: #b4692f;
-  background-image: linear-gradient(180deg, #f8d5ad 0%, #d08440 42%, #8d4718 58%, #efb377 100%);
-}
-
-/* 金属光泽银 */
-.rating-silver {
-  background-color: #b8bdc4;
-  background-image: linear-gradient(180deg, #ffffff 0%, #cfd4da 42%, #8b929a 58%, #eef1f4 100%);
-}
-
-/* 金属光泽金 */
-.rating-gold {
-  background-color: #d9a92b;
-  background-image: linear-gradient(180deg, #fff3b0 0%, #e9bd2c 42%, #a3770d 58%, #f8de7c 100%);
-}
-
-/* 金属光泽彩虹：斜向多档渐变，每档之间夹一次高光，接近金属彩虹反光 */
-.rating-rainbow {
-  background-color: #b23fd0;
-  background-image: linear-gradient(
-    115deg,
-    #ffd9d9 0%,
-    #ff5b5b 12%,
-    #ffd08a 26%,
-    #ffe74d 36%,
-    #8bf0ad 50%,
-    #4dc3ff 64%,
-    #b7a8ff 78%,
-    #f2b6ff 90%,
-    #d24dff 100%
-  );
-}
+/* Rating 分段底色已统一到全局 app.wxss（配色以 plays 为准），首页直接复用 .rating-*/
 
 /* 玩家名：白字 + 黑描边，独占铭牌整行宽度且不做省略号截断（过长时向外溢出而不是被隐藏） */
 .plate-name {
@@ -302,9 +248,18 @@ page {
   -webkit-text-stroke: 1rpx #000000;
 }
 
-/* 铭牌右上角：LV（白字黑描边，不单独占用玩家名的宽度） */
+/* 铭牌内侧右上角：LV 绝对定位于铭牌右上角（相对 .plate-body）。
+   铭牌图片顶部 16/96 为透明带，放大到 137rpx 高后透明带约 23rpx，
+   LV 只需往下移一段（top 28rpx）即可落到透明带之下的可见框体内 */
+.plate-level-row {
+  position: absolute;
+  top: 28rpx;
+  right: 22rpx;
+  white-space: nowrap;
+}
+
+/* LV 文字：白字黑描边，仅保留文本样式（位置由外层 .plate-level-row 决定） */
 .plate-level {
-  align-self: flex-end;
   font-size: 24rpx;
   font-weight: bold;
   line-height: 1.2;
@@ -425,14 +380,28 @@ page {
 }
 
 /* ---------- 游玩记录入口 ---------- */
-.card-more {
+/* ---------- 卡片底部：操作入口（查看游玩记录 / 查看best30，同一行靠右） ---------- */
+.card-actions {
   margin-top: 24rpx;
-  padding: 24rpx 0 16rpx;
+  padding-top: 24rpx;
+  border-top: 1rpx solid #f0f0f0;
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-end;
-  border-top: 1rpx solid #f0f0f0;
+}
+
+.card-more {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 4rpx 16rpx;
+}
+
+/* 第二个入口（best30）与「查看游玩记录」之间的间距 */
+.card-more + .card-more {
+  margin-left: 36rpx;
 }
 
 /* 入口按下反馈 */

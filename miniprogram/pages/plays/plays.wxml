@@ -29,7 +29,9 @@
           mode="aspectFit"
         ></image>
         <view class="plays-profile-plate-body">
-          <text class="plays-profile-level">LV.{{profile.level}}</text>
+          <view class="plays-profile-level-row">
+            <text class="plays-profile-level">LV.{{profile.level}}</text>
+          </view>
           <view class="plays-profile-main">
             <text class="plays-profile-rating rating-{{profile.ratingTier}}">{{profile.ratingText}}</text>
             <text class="plays-profile-name">{{profile.name}}</text>
@@ -98,6 +100,10 @@
             data-index="{{index}}"
             binderror="onMedalError"
           ></image>
+          <!-- 无奖章记录：在原位置显示浅灰色正方棱形虚影占位 -->
+          <view wx:else class="play-medal-empty">
+            <view class="play-medal-empty-diamond"></view>
+          </view>
         </view>
         <view class="play-meta">
           <view class="play-meta-main">

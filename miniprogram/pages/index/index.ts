@@ -78,6 +78,19 @@ Component({
         url: `/pages/plays/plays?profileId=${profileId}&name=${encodeURIComponent(name)}`,
       })
     },
+    // 点击「查看best30」入口：进入该账号的 Best30 页（rate 前 30，从高到低）
+    onOpenBest30(e: WechatMiniprogram.TouchEvent) {
+      const dataset = e.currentTarget.dataset as { id?: number | string; name?: string }
+      const profileId = Number(dataset.id) || 0
+      if (!profileId) {
+        wx.showToast({ title: '账号信息异常，请重试', icon: 'none' })
+        return
+      }
+      const name = typeof dataset.name === 'string' ? dataset.name : ''
+      wx.navigateTo({
+        url: `/pages/best30/best30?profileId=${profileId}&name=${encodeURIComponent(name)}`,
+      })
+    },
     // 请求资料
     loadProfiles(apiKey: string) {
       if (this.data.loading) {

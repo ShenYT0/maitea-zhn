@@ -2,6 +2,7 @@
   "pages": [
     "pages/index/index",
     "pages/plays/plays",
+    "pages/best30/best30",
     "pages/logs/logs",
     "pages/webview/webview"
   ],
